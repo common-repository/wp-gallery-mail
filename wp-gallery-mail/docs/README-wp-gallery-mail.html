@@ -1,0 +1,218 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>wp-gallery-mail for Wordpress</title>
+<style type="text/css">
+<!--
+body {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 10pt;
+	color: #000000;
+	background-color: #FFFFFF;
+}
+h1 {
+	font-size: 24pt;
+	font-family: "Trebuchet MS", Arial, sans-serif;
+	background-color: #CCFFFF;
+	padding: 3px 3px 8px;
+	border: 3px double #0000FF;
+}
+h2 {
+	font-size: 16pt;
+	border-top: 3px solid #999999;
+	border-right: 1px solid #bbbbbb;
+	border-bottom: 1px solid #bbbbbb;
+	border-left: 1px solid #bbbbbb;
+	background-color: #eeeeee;
+	padding: 2px;
+}
+h3 {
+	font-size: 12pt;
+}
+img {
+	padding: 2px;
+	border: 1px solid #000000;
+}
+-->
+</style>
+</head>
+
+<body>
+ <h1>wp-gallery-mail Plugin for Wordpress</h1>
+ <h2>Contents</h2>
+ <ol>
+   <li><a href="#overview">Overview</a></li>
+   <li><a href="#history">Version History</a></li>
+   <li><a href="#installation">Installation</a> </li>
+   <li><a href="#usage">Usage/Features</a></li>
+   <li><a href="#examples">Example Emails</a></li>
+   <li><a href="#styles">Styles</a></li>
+   <li><a href="#issues">Issues/Problems/Notes</a></li>
+ </ol>
+ <h2><a name="overview"></a>Overview</h2>
+ <p>By Ian Tomey. For the latest information see <a href="http://www.iantomey.com/categories/code/wordpress-gallery-mail/">this page</a>. Help/support/queries to the <a href="http://iantomey.com/forum/viewforum.php?f=1">forum</a>. </p>
+ <p>This code based on the wp-mail code by By John B. Hewitt - <a href="http://blade.lansmash.com">http://blade.lansmash.com</a> and the original from the Wordpress team.</p>
+ <p>wp-gallery-mail is a script to allow you to email entries to your <a href="http://www.wordpress.org">Wordpress</a> blog. This script differs from one supplied with Wordpress as it supports images and files. If an image is found in the email, it is posted to a <a href="http://gallery.sf.net">Gallery</a> album, and a linked thumbnail placed in the blog. Attached files of other types are saved on the server and a link is placed at the bottom of your blog post. </p>
+ <h2><a name="history"></a>Version History </h2>
+ <h3>25 April 2005 Version 0.4</h3>
+ <ul>
+   <li>Added centre/center alignment</li>
+   <li>Added default alignment</li>
+   <li>Generates styles automatically if required (If upgrading from 0.3, please see the <a href="#styles">styles section</a>)</li>
+   <li>Albums can now be created from email</li>
+   <li>Attached fies with spaces in the filename are now correctly handled (changed urlencode to rawurlencode)</li>
+   <li>Description of attached images now no longer has spaces changed to underscores </li>
+ </ul>
+ <h3>18 April 2005 Version 0.3</h3>
+ <ul>
+   <li>Now converted to a Wordpress plugin</li>
+   <li>Options page inside Wordpress administration, complete with  sanity checking. wp-gallery-mail-config.php deprecated</li>
+   <li>SMTP pipe handling overhauled and redirector added for compatibility with shared server environments where the jobs run as a real user but the webserver is not protected</li>
+   <li><strong>Verified running in SMTP forwarding mode on CPanel</strong></li>
+   <li>Post name now filtered for invalid characters </li>
+ </ul>
+ <h3>13 April 2005 Version 0.02</h3>
+ <ul>
+   <li>Ability to change the Gallery album to post to through <a href="#mailcommands">mail commands</a></li>
+   <li>Optionally add a link back to the Wordpress post in the description field of the images inside gallery</li>
+   <li>Graceful error condition handling. If it is unable to load the album specified in the mail, the default album, or an Gallery reports an error whilst posting, then the script will revert to putting the in the local files directory and uses that on the page (no thumbnail creation though) </li>
+   <li>Changed the image meta information from {..} to (..) as some mobile phones cannot enter braces (curly brackets) </li>
+   <li>Now correctly tells the difference between login failure and no emails</li>
+   <li>Fixed handling images with special characters in the filename </li>
+   <li>Fixed category handling</li>
+   <li>Moved configuration variables into a separate file to ease upgrading </li>
+ </ul>
+ <h3>7 April 2005 Version 0.01</h3>
+ <ul>
+   <li>Initial Version </li>
+ </ul>
+ <h2><a name="installation"></a>Installation</h2>
+ <ul>
+   <li>Copy wp-gallery-mail directory to wp-content/plugins</li>
+   <li>Go into the Wordpress administration screen and activate the wp-gallery-mail plugin</li>
+   <li>Go to the Options page, select the wp-gallery-mail panel, and configure the plugin. If you are using the POP3 email access method you will also need to configure the 'Writing By Email' section on the Wordpress screen 'Options..Writing'</li>
+ </ul>
+ <h3>Calling the Script</h3>
+ <p> There are 3 ways of calling the script and having it process your emails. Your pathway to email blogging bliss is illuminated by the information at the bottom of the options page, here is an example:</p>
+ <p><a name="optionsinfo"></a> <img src="info.gif" width="739" height="211"> </p>
+ <ol>
+   <li>
+     <p>Manually</p>
+	<p>If neither of the other two methods works for you then you can trigger the script manually by pointing your browser at the URL. This only works when the plugin is set into POP3 mode. </p>
+   </li>
+   <li><p>Periodically via a CRON job</p>
+   <p>You can set the server to periodically check a POP3 email account for new posts. The path to the processor script is indicated. That script may need to be modified to add a sha-bang. See the link at the end of the document for more information. </p>
+   </li>
+   <li>
+     <p>Automatically via SMTP </p>
+   <p>This is the best method - posts will be added instantly. For information on how to set this up, see the link at the end of this section. That is unless your hosting company uses the CPanel management software. If they do it's dead easy to set up just follow these instructions (screenshots may vary due to different themes). </p>
+   <p>First, go to your CPanel and select Mail or POP Mail accounts (depending on theme), which should give you a menu along the lines of </p>
+   <p><img src="cpanel-mail.gif" width="308" height="350"><br>
+     Select 'Forwarders' and you will get something like this:</p>
+   <p><img src="cpanel-forwarders.gif" width="672" height="172"><br>
+     Select 'Add Forwarder' to get this page:
+   </p>
+   <p><img src="cpanel-add-forwarder.gif" width="375" height="159"><br>
+     Now, in Box 1, enter the name of the email address at your domain (i.e. 'mymailbox' not 'mymailbox@mydomain.com'). In Box 2, copy the text underneath &quot;<a href="#optionsinfo">Pipe command (for SMTP mail forwards)</a>&quot; in the options window. Make sure there is no space at the start of the text, it must begin with the vertical bar ( '|' ) </p>
+   <p>Hit 'Add Forwarder' and that's it! </p>
+   </li>
+ </ol>
+ <p>For more information see <a href="http://wiki.wordpress.org/?pagename=How%20To%20Blog%20By%20Email">this Wordpress document</a>, remembering to change script name as appropriate </p>
+ <h2><a name="usage"></a>Usage/Features</h2>
+ <p>Supports images that are placed inline or added as attachments, and files as attachments. Files are added to wp-content by default, however this can be changed in the options page. </p>
+ <p>Post to different categories in your blog by placing either the name of the category or its number in the subject line, for example &quot;General: This post will go in the General category&quot; </p>
+ <h3><a name="mailcommands"></a>Mail Commands</h3>
+ <p>Mail commands allow you to control things about how the blog entry is posted. These appear on the very first line of the mail and must be in the format #(command: parameters). A newline is optional afterwards, it will be discarded.</p>
+ <p>Currently supported mail commands: </p>
+ <table width="100%"  border="1" cellspacing="0" cellpadding="1">
+   <tr>
+     <th width="10%" nowrap>Command</th>
+     <th width="25%">Description</th>
+     <th width="65%">Example/Notes</th>
+   </tr>
+   <tr>
+     <td nowrap>album: <em>albumname</em> </td>
+     <td>Change the Gallery album that images will be posted to.</td>
+     <td><p>#(album: holiday)<br>
+       If the album cannot be found or there is an error loading it, the default album will be used instead. </p>
+     </td>
+   </tr>
+   <tr>
+     <td nowrap>newalbum: <em>newname</em> <em>parent title</em> </td>
+     <td>Create a new album and use this to post images to. </td>
+     <td><p>The only valid characters inside newname should are alphanumeric and dashes.<br>
+        To create a new top level album, use / as the parent album name. </p>
+       <p>#(newalbum: car / A collection of photos of my new car) <br>
+         Creates an album called 'car' in the root of the gallery </p>
+       <p> #(newalbum: antwerp-weekend holiday Photos from my weekend in Antwerp)<br>
+         Creates an album called 'antwerp-weekend' under the album 'holiday'</p>
+     </td>
+   </tr>
+ </table>
+ <h3>Image Meta Information</h3>
+ <p>Inline images (i.e. images inserted directly into the email in HTML mode) may now have some meta information associated with them. This allows some control over the image and a title to be added. To achieve this, place the meta information in brackets <em>immediately</em> after the image. In the following example we use *image* to represent an image in the post:</p>
+ <p>*image*(left|border: 2px solid red|A picture of Eric Balls, a retired plumbers mate and his dog called Nuts) This is the text of the post.... </p>
+ <p>Inside the brackets, the various information is broken up by vertical bars, and the final piece of text is the image title (if no image title or meta text is present, then the filename will be used). If you do not wish to specify a different image title to the filename, simply omit any description from the end, <em>but you must be sure to have added the final vertical bar</em>. For example (left|).</p>
+ <p>Currently supported meta items:</p>
+ <table width="100%"  border="1" cellspacing="0" cellpadding="1">
+   <tr>
+     <th width="10%">Item</th>
+     <th width="25%">Description</th>
+     <th width="65%">Example/Notes</th>
+   </tr>
+   <tr>
+     <td>left</td>
+     <td>Float the image to the left</td>
+     <td> place the image for floating at the very start of the line of text</td>
+   </tr>
+   <tr>
+     <td>right</td>
+     <td>Float the image to the right </td>
+     <td> place the image for floating at the very start of the line of text</td>
+   </tr>
+   <tr>
+     <td>centre<br>
+     center</td>
+     <td>Place the image in the centre </td>
+     <td>creates a block with the image centred </td>
+   </tr>
+   <tr>
+     <td><p>border: xxx </p>
+     </td>
+     <td>Add CSS border style </td>
+     <td><p>(border: 2px solid green|This has a 2 pixel solid green border)<br>
+         <em>       See CSS documentation for more information</em></p>
+     </td>
+   </tr>
+   <tr>
+     <td>description: xxx </td>
+     <td>Add a description in the gallery album</td>
+     <td>(description: this is a description|this is the image title)</td>
+   </tr>
+ </table>
+ <h2><a name="examples"></a>Example Emails</h2>
+ <h3>Example 1</h3>
+ <p><img src="sample-email-1.jpg" width="701" height="361"> </p>
+ <p>So in the above email we are saying this should be posted in the 'General' category, the Gallery album that the image should be posted in is 'stuff'. The image should be floated to the left, and it's description in the album is going to be &quot;A Roberts 9962&quot;. The title of the image is &quot;My worldband radio&quot;. </p>
+ <p><img src="sample-post-1.jpg" width="497" height="145"></p>
+ <p>Here is how the image was posted into the blog. Note that the text is rammed up right next to the thumbnail image. See the section on <a href="#styles">Styles</a> to fix this. </p>
+ <p><img src="sample-gallery-image-1.jpg" width="421" height="355"></p>
+ <p>And this is how the image appears inside the Gallery album. 'A Test Post' is a link back to the blog entry.</p>
+ <h2><a name="styles"></a>Styles</h2>
+ <p>From version 0.4 by default a number of CSS styles required by the plugin are added to the document. This may be switched off or the styles edited inside the plugin options page. If you switch off the generation of the styles you will need to move them into the stylesheet of your theme.</p>
+ <p>One thing that may require tweaking in the styles is the size of the centre image, this is on the style <code>galleryCentreImage</code> which looks like this: </p>
+ <pre>.galleryCentreImage {
+			max-width: 450px;
+			width: expression(this.width &gt; 450 ? 450: true);
+			...
+}</pre>
+ <p>If you want to change the maxiumum width of the centre image you will need to change '450' to whatever value you require on both of those lines. The second line is required for Internet Explorer which doesn't support the max-width style. </p>
+ <p>If you have upgraded from version 0.3 you will either need to update the styles in your stylesheet or delete them and rely on the plugin to place them directly into the document. </p>
+ <h2><a name="issues"></a>Issues/Problems/Notes</h2>
+ <p>A very large chunk of the code for processing has been rewritten from the original wp-mail hack and so <strong>may cause formatting or recognition problems</strong> with email formats I have not seen. However, it has been tested with posts from Outlook 2003 and Thunderbird 1.02 and a Sony Ericsson T610, all of these work as planned and validate correctly as XHTML 1.0 Transitional through the Kubrick theme. </p>
+ <p>This script is very memory hungry having to load Wordpress &amp; Gallery plus process potentially large emails. If you are finding the script seems to die, check the error log and see if it ran out of memory. I would suggest a minimum of 16M being available to PHP (which can be set with the php.ini or .htaccess file). I have tweaked some of the code inside mimedecode and the script itself to reduce value copying. Probably using the PECL mail decode functions would be easier on memory (and faster) but it does not seem to be deployed that much so I have avoided using it. </p>
+ <p>For the latest information on this code see <a href="http://www.iantomey.com/categories/code/wordpress-gallery-mail/">this page</a>. Help/support/queries/suggestions to the <a href="http://iantomey.com/forum/viewforum.php?f=1">forum</a>. </p>
+</body>
+</html>
